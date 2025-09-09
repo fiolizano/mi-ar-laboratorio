@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 AR Laboratorio - Botella Flotante</title>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.4.0/dist/aframe-master.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1000;
+            border: 2px solid #00ff88;
+            font-size: 14px;
+        }
+        
+        .marker-found {
+            background: rgba(0,255,136,0.3) !important;
+            animation: success 2s infinite;
+        }
+        
+        @keyframes success {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #00ff88;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 13px;
+            z-index: 100;
+            border: 1px solid #00ff88;
+        }
+        
+        .step {
+            margin: 8px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        
+        .marker-demo {
+            width: 60px;
+            height: 60px;
+            margin: 10px auto;
+            background: white;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            border-radius: 5px;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="info" class="overlay">
+        <h3>🔬 AR Laboratorio</h3>
+        <div class="step">1️⃣ Permite acceso a la cámara cuando se solicite</div>
+        <div class="step">2️⃣ Busca "hiro marker" en Google</div>
+        <div class="step">3️⃣ Apunta la cámara hacia este tipo de símbolo:</div>
+        <div class="marker-demo">HIRO<br>MARKER</div>
+        <div class="step">4️⃣ ¡Ve la botella flotante del laboratorio!</div>
+    </div>
+    
+    <div id="status" class="status">🔍 Cargando AR...</div>
+
+    <a-scene
+        vr-mode-ui="enabled: false"
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+        renderer="logarithmicDepthBuffer: true; antialias: true;"
+        embedded
+        loading-screen="enabled: false">
+        
+        <a-assets>
+            <img id="botella" 
+                 src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjM1MCIgdmlld0JveD0iMCAwIDIwMCAzNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJib3R0bGUiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmOGY5ZmEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlOWVjZWYiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0ibGlxdWlkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZkNzAwIiBzdG9wLW9wYWNpdHk9IjAuOTUiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iI2ZmYzEwNyIgc3RvcC1vcGFjaXR5PSIwLjkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmE1MDAiIHN0b3Atb3BhY2l0eT0iMC44NSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxlbGxpcHNlIGN4PSIxMDUiIGN5PSIzMzAiIHJ4PSI0MCIgcnk9IjEyIiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIwLjMiLz48cmVjdCB4PSI3MCIgeT0iMTIwIiB3aWR0aD0iNjAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2JvdHRsZSkiIHN0cm9rZT0iIzAwNzNlNiIgc3Ryb2tlLXdpZHRoPSIyIiByeD0iNSIvPjxyZWN0IHg9Ijg1IiB5PSI4NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjQ1IiBmaWxsPSJ1cmwoI2JvdHRsZSkiIHN0cm9rZT0iIzAwNzNlNiIgc3Ryb2tlLXdpZHRoPSIyIiByeD0iMiIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSI3NSIgcng9IjIyIiByeT0iMTUiIGZpbGw9IiMwMGJjZDQiIHN0cm9rZT0iIzAwNzNlNiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjcwIiByeD0iMTgiIHJ5PSIxMiIgZmlsbD0iIzAwYTNjMSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjY4IiByPSI4IiBmaWxsPSIjMDA4ZGFlIi8+PHJlY3QgeD0iNzUiIHk9IjIwMCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjEwMCIgZmlsbD0idXJsKCNsaXF1aWQpIiByeD0iMyIvPjxjaXJjbGUgY3g9Ijg4IiBjeT0iMjMwIiByPSI0IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjgiLz48Y2lyY2xlIGN4PSIxMTAiIGN5PSIyNjAiIHI9IjMiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNyIvPjxjaXJjbGUgY3g9Ijk1IiBjeT0iMjg1IiByPSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjYiLz48cmVjdCB4PSI3NSIgeT0iMTIwIiB3aWR0aD0iMTUiIGhlaWdodD0iMTgwIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjMiIHJ4PSI3Ii8+PHJlY3QgeD0iNTUiIHk9IjE3MCIgd2lkdGg9IjkwIiBoZWlnaHQ9IjM1IiBmaWxsPSIjZjhmOWZhIiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMSIgcng9IjMiLz48dGV4dCB4PSIxMDAiIHk9IjE4MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMzMzMiIGZvbnQtd2VpZ2h0PSJib2xkIj5MQUJPUEFUT1JJTzwvdGV4dD48dGV4dCB4PSIxMDAiIHk9IjE5NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjYiIGZpbGw9IiM2NjYiPkFSLTUwMG1MPC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzAwNzNlNiIgZm9udC13ZWlnaHQ9ImJvbGQiPvCfp6ogQVIgTEFCPC90ZXh0Pjwvc3ZnPg==">
+        </a-assets>
+
+        <a-camera-static></a-camera-static>
+
+        <a-marker preset="hiro" id="marker">
+            <a-entity position="0 0 0">
+                
+                <!-- Botella principal -->
+                <a-image 
+                    src="#botella"
+                    position="0 2 0"
+                    rotation="-90 0 0"
+                    width="2.5"
+                    height="3.5"
+                    transparent="true"
+                    opacity="0.95"
+                    animation="property: rotation; to: -90 360 0; dur: 10000; loop: true"
+                    animation__float="property: position; to: 0 2.8 0; dur: 3000; loop: true; dir: alternate">
+                </a-image>
+                
+                <!-- Partículas flotantes -->
+                <a-sphere
+                    position="0.8 2.2 0.4"
+                    radius="0.06"
+                    color="#00ff88"
+                    opacity="0.9"
+                    material="emissive: #00ff88; emissiveIntensity: 0.4"
+                    animation="property: position; to: 1.2 3 0.8; dur: 4000; loop: true; dir: alternate">
+                </a-sphere>
+                
+                <a-sphere
+                    position="-0.6 2.1 0.3"
+                    radius="0.05"
+                    color="#ffd700"
+                    opacity="0.8"
+                    material="emissive: #ffd700; emissiveIntensity: 0.5"
+                    animation="property: position; to: -1.0 2.9 0.6; dur: 3500; loop: true; dir: alternate; delay: 800">
+                </a-sphere>
+                
+                <a-sphere
+                    position="0.4 2.4 -0.3"
+                    radius="0.04"
+                    color="#00bcf2"
+                    opacity="0.7"
+                    material="emissive: #00bcf2; emissiveIntensity: 0.3"
+                    animation="property: position; to: 0.8 3.2 -0.7; dur: 4200; loop: true; dir: alternate; delay: 1500">
+                </a-sphere>
+                
+                <a-sphere
+                    position="-0.3 2.6 -0.2"
+                    radius="0.045"
+                    color="#ff6b6b"
+                    opacity="0.6"
+                    material="emissive: #ff6b6b; emissiveIntensity: 0.4"
+                    animation="property: position; to: -0.7 3.4 -0.5; dur: 3800; loop: true; dir: alternate; delay: 2200">
+                </a-sphere>
+                
+                <!-- Texto principal -->
+                <a-text
+                    value="🧪 BOTELLA AR DETECTADA"
+                    position="0 4 0"
+                    align="center"
+                    width="7"
+                    color="#00ff88"
+                    font="roboto"
+                    material="emissive: #00ff88; emissiveIntensity: 0.2"
+                    animation="property: rotation; to: 0 360 0; dur: 12000; loop: true">
+                </a-text>
+                
+                <a-text
+                    value="✨ Laboratorio en AR ✨"
+                    position="0 3.5 0"
+                    align="center"
+                    width="5"
+                    color="#ffffff"
+                    font="roboto">
+                </a-text>
+                
+                <!-- Anillos base -->
+                <a-ring
+                    position="0 0.1 0"
+                    radius-inner="1.2"
+                    radius-outer="1.7"
+                    color="#00ff88"
+                    opacity="0.5"
+                    material="emissive: #00ff88; emissiveIntensity: 0.2"
+                    animation="property: rotation; to: 0 360 0; dur: 8000; loop: true">
+                </a-ring>
+                
+                <a-ring
+                    position="0 0.15 0"
+                    radius-inner="0.8"
+                    radius-outer="1.1"
+                    color="#ffd700"
+                    opacity="0.4"
+                    material="emissive: #ffd700; emissiveIntensity: 0.15"
+                    animation="property: rotation; to: 0 -360 0; dur: 6000; loop: true">
+                </a-ring>
+                
+                <!-- Panel de estado -->
+                <a-box
+                    position="2.2 2.5 0"
+                    width="1"
+                    height="0.6"
+                    depth="0.1"
+                    color="#000000"
+                    opacity="0.8">
+                    <a-text
+                        value="ESTADO: ACTIVO"
+                        position="0 0.1 0.06"
+                        align="center"
+                        width="8"
+                        color="#00ff88">
+                    </a-text>
+                    <a-text
+                        value="LAB AR"
+                        position="0 -0.1 0.06"
+                        align="center"
+                        width="6"
+                        color="#ffffff">
+                    </a-text>
+                </a-box>
+                
+            </a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        const info = document.getElementById('info');
+        const status = document.getElementById('status');
+        const marker = document.getElementById('marker');
+        let markerFound = false;
+        
+        function updateStatus(message) {
+            status.textContent = message;
+        }
+        
+        function playSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.8);
+            } catch (error) {
+                console.log('Audio no disponible');
+            }
+        }
+        
+        // Eventos
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔬 AR Laboratorio iniciando...');
+            updateStatus('🔍 Iniciando cámara...');
+            
+            const scene = document.querySelector('a-scene');
+            if (scene) {
+                scene.addEventListener('loaded', function() {
+                    console.log('✅ Escena cargada');
+                    updateStatus('📸 Cámara lista - Busca marcador Hiro');
+                });
+                
+                scene.addEventListener('arjs-video-loaded', function() {
+                    console.log('📹 Video listo');
+                    updateStatus('🔍 Busca el marcador Hiro en Google');
+                });
+            }
+            
+            if (marker) {
+                marker.addEventListener('markerFound', function() {
+                    console.log('🎯 ¡Marcador detectado!');
+                    markerFound = true;
+                    
+                    info.classList.add('marker-found');
+                    info.innerHTML = `
+                        <h3>🎉 ¡MARCADOR DETECTADO!</h3>
+                        <div class="step">✅ <strong>¡Botella AR visible!</strong></div>
+                        <div class="step">🔬 La botella del laboratorio está flotando</div>
+                        <div class="step">📱 Mueve el dispositivo para explorar</div>
+                        <small>💡 Mantén el marcador visible</small>
+                    `;
+                    
+                    updateStatus('🎊 ¡Experiencia AR activa!');
+                    playSound();
+                });
+                
+                marker.addEventListener('markerLost', function() {
+                    console.log('❌ Marcador perdido');
+                    markerFound = false;
+                    
+                    info.classList.remove('marker-found');
+                    info.innerHTML = `
+                        <h3>🔍 Marcador Perdido</h3>
+                        <div class="step">📱 Vuelve a apuntar hacia el marcador Hiro</div>
+                        <div class="step">💡 Asegúrate de buena iluminación</div>
+                        <div class="step">📏 Mantén distancia de 20-50cm</div>
+                        <div class="marker-demo">HIRO<br>MARKER</div>
+                    `;
+                    
+                    updateStatus('🔍 Reposiciona la cámara hacia el marcador');
+                });
+            }
+        });
+        
+        // Ayuda automática
+        setTimeout(() => {
+            if (!markerFound) {
+                updateStatus('💡 Busca "hiro marker AR" en Google Images');
+            }
+        }, 10000);
+        
+        console.log('🚀 AR Laboratorio listo');
+    </script>
+</body>
+</html>
